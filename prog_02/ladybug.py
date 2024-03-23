@@ -2,7 +2,8 @@
 import time
 import pyvisa as visa
 
-VISA_LIB_PATH = '/usr/lib/librsvisa.so'
+#VISA_LIB_PATH = '/usr/lib/librsvisa.so'
+VISA_LIB_PATH = '@py'
 
 class LB5908A():
     """Ladybug Power Sensor LB5908A class"""
