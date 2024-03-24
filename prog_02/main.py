@@ -4,11 +4,17 @@ from ladybug import LB5908A
 import sys
 from os import system, name
 
-def teste(pm):
+def teste_dbm(pm):
     """Small test program"""
     pm.clear_auto_average()
     pm.set_average_count(10)
-    pm.read_many_times(10)
+    print(f"{pm.read_power_dbm(2)} dBm")
+
+def teste_watt(pm):
+    """Small test program"""
+    pm.clear_auto_average()
+    pm.set_average_count(10)
+    print(f"{pm.read_power_watt(2)} Watts")
 
 # define our clear function
 def clear():
@@ -26,14 +32,11 @@ if not sys.warnoptions:
 
 my_pm = LB5908A()
 
-clear()
+#clear()
 print(f"My Power Meter is {my_pm.show_info()}\n")
 
-my_pm.reset()
 print("Show reading in dBm")
-my_pm.set_unit_power_dbm()
-teste(my_pm)
+teste_dbm(my_pm)
 
 print("Show reading in Watts")
-my_pm.set_unit_power_watt()
-teste(my_pm)
+teste_watt(my_pm)
