@@ -1,8 +1,10 @@
 """Another program for test Ladybug Power sensor"""
 #import time
-from ladybug import LB5908A
-import sys
 from os import system, name
+import sys
+from ladybug import LB5908A
+
+
 
 def teste_dbm(pm):
     """Small test program"""
@@ -18,6 +20,7 @@ def teste_watt(pm):
 
 # define our clear function
 def clear():
+    """Clear screen"""
     # for windows
     if name == 'nt':
         _ = system('cls')

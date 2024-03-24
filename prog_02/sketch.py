@@ -1,3 +1,4 @@
+"""Just a space for tests"""
 import sys
 import pyvisa as visa
 
