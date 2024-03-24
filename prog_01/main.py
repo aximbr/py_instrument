@@ -5,7 +5,8 @@ import pyvisa as visa
 
 
 rm = visa.ResourceManager('/usr/lib/librsvisa.so')
-#print(rm.list_resources('USB?*::INSTR'))
+#rm = visa.ResourceManager('@py')
+print(rm.list_resources('USB?*::INSTR'))
 ladybug = rm.open_resource('USB0::6669::5592::210118::1::INSTR')
 
 print(ladybug.query('*IDN?'))
