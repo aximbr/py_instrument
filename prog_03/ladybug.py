@@ -3,16 +3,16 @@ import time
 import pyvisa as visa
 
 #VISA_LIB_PATH = '/usr/lib/librsvisa.so'
-#VISA_LIB_PATH = '@py'
-VISA_LIB_PATH = ' /usr/lib/x86_64-linux-gnu/libvisa.so.24.0.0'
+#VISA_LIB_PATH = '/usr/lib/x86_64-linux-gnu/libvisa.so.24.0.0'
+VISA_LIB_PATH = '@py'
+
 
 class LB5908A():
     """Ladybug Power Sensor LB5908A class"""
     def __init__(self):
-        rm = visa.ResourceManager()
+        rm = visa.ResourceManager(VISA_LIB_PATH)
         print(rm)
         address = rm.list_resources('USB?*::INSTR')
-        print(address)
         self.pm = rm.open_resource(address[0])
         self.description = self.pm.query('*IDN?')
         self.reset()
@@ -32,7 +32,7 @@ class LB5908A():
 
     def get_auto_average(self):
         """Return the state of Auto Average"""
-        return int(self.pm.query('AVER:COUN:AUTO?'))
+        return self.pm.query('AVER:COUN:AUTO?')
 
     def clear_auto_average(self):
         """Disable the Auto Average"""
@@ -41,6 +41,10 @@ class LB5908A():
     def set_auto_average(self):
         """Set the Auto Average"""
         self.pm.write('AVER:COUN:AUTO 1')
+
+    def get_average_count(self):
+        """Return the value for average count"""
+        return self.pm.query('AVER:COUN ?')
 
     def set_average_count(self, num):
         """Set the average count to 'num' """
