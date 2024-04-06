@@ -3,8 +3,8 @@ import time
 import pyvisa as visa
 
 #Select one of VISA lib implementation, make sure it is installed
-VISA_LIB_PATH = '/usr/lib/librsvisa.so'
-#VISA_LIB_PATH = '/usr/lib/x86_64-linux-gnu/libvisa.so.24.0.0'
+#VISA_LIB_PATH = '/usr/lib/librsvisa.so'
+VISA_LIB_PATH = '/usr/lib/x86_64-linux-gnu/libvisa.so.24.0.0'
 #VISA_LIB_PATH = '@py'
 
 #Min and Max Freq (MHz) for this model
@@ -20,8 +20,12 @@ class LB5908A():
         self.pm = rm.open_resource(address[0])
         self.description = self.pm.query('*IDN?')
         self.power_mode = ""
-        self.frequency = 0.0
         self.reset()
+        #visa.log_to_screen()
+
+    def close(self):
+        """Close the session"""
+        self.pm.close()
 
     def show_info(self):
         """Returns description for instrument"""
@@ -31,7 +35,6 @@ class LB5908A():
         """Set the instrument to a know state"""
         self.pm.write('*RST')
         self.power_mode = self.get_unit_power()
-        self.frequency = self.get_freq()
         time.sleep(0.1)
 
     def set_default_state(self):
@@ -50,6 +53,10 @@ class LB5908A():
         """Turn off continuous triggering"""
         self.pm.write('INIT:CONT OFF')
 
+    def turn_on_continuos_triggering(self):
+        """Turn on continuous triggering"""
+        self.pm.write('INIT:CONT ON')
+
     def prepare_to_read(self, freq):
         """Send commands to prepare to read"""
         self.set_default_state()
@@ -63,6 +70,19 @@ class LB5908A():
         """Return one power reading"""
         return self.pm.query('READ?')
     
+    def prepare_to_fetch(self, freq):
+        """Send commands to prepare to fetch"""
+        self.set_default_state()
+        self.clear_auto_average()
+        self.turn_off_step_detection()
+        self.turn_on_continuos_triggering()
+        self.set_average_count(5)
+        self.set_freq(freq)
+
+    def fetch(self):
+        """Return one power using Fetch"""
+        return float(self.pm.query('FETCH?'))
+
     def prepare_to_measure(self, freq):
         """Send commands to prepare to measure"""
         self.pm.timeout = 50000
@@ -121,11 +141,10 @@ class LB5908A():
 
     def get_freq(self):
         """Read the current frequency set"""
-        self.frequency = float(self.pm.query('FREQ?'))
-        return self.frequency
+        return float(self.pm.query('FREQ?'))
 
+    
     def set_freq(self, new_freq):
         """Set new frequency on Power Sensor"""
         if MIN_FREQ < new_freq < MAX_FREQ:
             self.pm.write(f'FREQ {new_freq} HZ')
-        return self.get_freq()
