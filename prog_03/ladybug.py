@@ -2,6 +2,7 @@
 import time
 import pyvisa as visa
 
+#Select one of VISA lib implementation, make sure it is installed
 VISA_LIB_PATH = '/usr/lib/librsvisa.so'
 #VISA_LIB_PATH = '/usr/lib/x86_64-linux-gnu/libvisa.so.24.0.0'
 #VISA_LIB_PATH = '@py'
@@ -31,20 +32,50 @@ class LB5908A():
         self.pm.write('*RST')
         self.power_mode = self.get_unit_power()
         self.frequency = self.get_freq()
+        time.sleep(0.1)
 
-        time.sleep(0.2)
-
-    def read_power(self):
-        """Return one power reading"""
-        return self.pm.query('READ?')
-
-    def get_auto_average(self):
-        """Return the state of Auto Average"""
-        return self.pm.query('AVER:COUN:AUTO?')
+    def set_default_state(self):
+        """Set to default settings"""
+        self.pm.write('SYST:PRES DEF')
 
     def clear_auto_average(self):
         """Disable the Auto Average"""
         self.pm.write('AVER:COUN:AUTO 0')
+
+    def turn_off_step_detection(self):
+        """Turn off step detection"""
+        self.pm.write('SENS:AVER:SDET OFF')
+
+    def turn_off_continuos_triggering(self):
+        """Turn off continuous triggering"""
+        self.pm.write('INIT:CONT OFF')
+
+    def prepare_to_read(self, freq):
+        """Send commands to prepare to read"""
+        self.set_default_state()
+        self.clear_auto_average()
+        self.turn_off_step_detection()
+        self.turn_off_continuos_triggering()
+        self.set_average_count(5)
+        self.set_freq(freq)
+
+    def read_power(self):
+        """Return one power reading"""
+        return self.pm.query('READ?')
+    
+    def prepare_to_measure(self, freq):
+        """Send commands to prepare to measure"""
+        self.pm.timeout = 50000
+        self.set_default_state()
+        self.set_freq(freq)
+
+    def measure(self):
+        """Perform a measure"""
+        return float(self.pm.query('MEAS?'))
+
+    def get_auto_average(self):
+        """Return the state of Auto Average"""
+        return self.pm.query('AVER:COUN:AUTO?')
 
     def set_auto_average(self):
         """Set the Auto Average"""
@@ -88,23 +119,13 @@ class LB5908A():
         num = float(self.read_power())
         return f"{num:.{num_dig}e}"
 
-    def get_meas(self, num_dig):
-        """Performe a measure using num_dig of resolution"""
-        num = float(self.pm.query(f'MEAS? DEF, {num_dig}'))
-        if self.power_mode == 'DBM':
-            return f"{num:.{num_dig}f}"
-        else:
-            return f"{num:.{num_dig}e}"
-        
     def get_freq(self):
         """Read the current frequency set"""
         self.frequency = float(self.pm.query('FREQ?'))
         return self.frequency
-    
+
     def set_freq(self, new_freq):
         """Set new frequency on Power Sensor"""
         if MIN_FREQ < new_freq < MAX_FREQ:
             self.pm.write(f'FREQ {new_freq} HZ')
         return self.get_freq()
-            
-        
