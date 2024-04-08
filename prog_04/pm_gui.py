@@ -2,14 +2,12 @@
 import tkinter as tk
 from tkinter import ttk
 from ladybug import LB5908A
-import random
 
 BLACK = "#000000"
 RED = "#e7305b"
 GREEN = "#55ff33"
 FONT_NAME = "Ariel"
-reads = [0, 1, 3, 6, 2, 6, 8, 9]
-
+#include here the frequecies to work with
 FREQS = [954, 1000, 2185, 2200, 4000, 4300]
 
 class App(tk.Tk):
@@ -31,8 +29,8 @@ class App(tk.Tk):
         self.list_freq.bind('<<ListboxSelect>>', self.callback_list_freq)
         self.list_freq.grid(column=0, row=1, rowspan=1 )
         #MHZ Label
-        self.label_MHz = ttk.Label(text="MHz")
-        self.label_MHz.grid(column=0, row=2)
+        self.label_mhz = ttk.Label(text="MHz", background="white", foreground="black", font=("Arial",8, "bold"))
+        self.label_mhz.grid(column=0, row=2)
         #Info Label
         self.info_label = ttk.Label(text="", background="white",foreground="black", font=("Arial",8))
         self.info_label.grid(column=1,row=3)
@@ -43,10 +41,11 @@ class App(tk.Tk):
         #Create PM
         self.pm_frequency = 1.0E09
         self.my_pm = LB5908A()
+        self.task_id = ""
         #Initial condition
         self.isreading = False
         self.__setup__()
-        
+
     def __setup__(self):
         #Fill with description of Power Sensor
         self.info_label.config(text=self.my_pm.description)
@@ -60,7 +59,7 @@ class App(tk.Tk):
             self.list_freq.insert(tk.END, freq)
         #Prepare to fetch values from Power Sensor
         self.my_pm.prepare_to_fetch(self.pm_frequency)
-        
+
     def callback_list_freq(self, event):
         """Callback function when a frequency is select"""
         self.pm_frequency = FREQS[self.list_freq.curselection()[0]] *10E06
@@ -72,7 +71,6 @@ class App(tk.Tk):
 
     def start_stop_read(self):
         """Read Button action"""
-        #pm_read = reads[random.randint(0, len(reads)-1)]
         if not self.isreading:
             self.read_button.config(text="Stop")
             self.task_id = self.after(300, self.read)
