@@ -8,7 +8,7 @@ RED = "#e7305b"
 GREEN = "#55ff33"
 FONT_NAME = "Ariel"
 #include here the frequecies to work with
-FREQS = [954, 1000, 2185, 2200, 4000, 4300]
+FREQS = [50, 954, 1000, 2185, 2200, 4000, 4300]
 
 class App(tk.Tk):
     """Class for PM GUI"""
