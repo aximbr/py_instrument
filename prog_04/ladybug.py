@@ -4,8 +4,8 @@ import pyvisa as visa
 
 #Select one of VISA lib implementation, make sure it is installed
 #VISA_LIB_PATH = '/usr/lib/librsvisa.so'
-VISA_LIB_PATH = '/usr/lib/x86_64-linux-gnu/libvisa.so.24.0.0'
-#VISA_LIB_PATH = '@py'
+#VISA_LIB_PATH = '/usr/lib/x86_64-linux-gnu/libvisa.so.24.0.0'
+VISA_LIB_PATH = '@py'
 
 #Min and Max Freq (MHz) for this model
 MIN_FREQ = 1.0E06
