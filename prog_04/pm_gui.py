@@ -14,9 +14,10 @@ class App(tk.Tk):
     """Class for PM GUI"""
     def __init__(self):
         super().__init__()
-        #main window
+        #main window 
         self.title("Very Very Simple Power Meter")
-        self.config(background="white", padx=5, pady=5, width=480, height=320)
+        self.config(background="white", padx=5, pady=5)
+        #self.attributes('-fullscreen', True)
         #Title
         self.title_label = ttk.Label(text="Power Meter", foreground=BLACK, background="white", font=("Courrier", 26))
         self.title_label.grid(column=1, row=0)
