@@ -1,15 +1,12 @@
-"""Class definition for Power Meter GUI"""
 import tkinter as tk
 from tkinter import ttk
 
-#from random import randrange
+from random import randrange
 
 from collections import deque
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-
-from ladybug import LB5908A
 
 BLACK = "#000000"
 RED = "#e7305b"
@@ -51,15 +48,15 @@ class App(tk.Tk):
         self.label_mhz = ttk.Label(text="MHz", background="white", foreground="black", font=("Arial",8, "bold"))
         self.label_mhz.grid(column=0, row=0)
         #Info Label
-        self.info_label = ttk.Label(text="", wraplength=70, background="white",foreground="black", font=("Arial",8))
+        self.info_label = ttk.Label(text="", wraplength=60, background="white",foreground="black", font=("Arial",8))
         self.info_label.grid(column=0,row=2, sticky='N', pady=10)
         #Read Button
         self.read_button = ttk.Button(text="", command=self.start_stop_read)
         self.read_button.grid(column=2, row=1)
         #End of UI definition
         #Create PM
-        self.pm_frequency = 1.0E09
-        self.my_pm = LB5908A()
+        #self.pm_frequency = 1.0E09
+        #self.my_pm = LB5908A()
         self.task_id = ""
         #Create a place to store the last 60*0.3 = 200 readings
         self.pm_reads = deque(maxlen=MAX_READINGS)
@@ -74,6 +71,8 @@ class App(tk.Tk):
         self.ax.set_xlim(60, 0)
         self.ax.yaxis.tick_right()
         self.fig.canvas.draw()
+    
+
         #Create a canvas to contains the figure
         self.canvas_fig = FigureCanvasTkAgg(self.fig)
         self.canvas_fig.get_tk_widget().configure(width=200,height=70)
@@ -84,8 +83,8 @@ class App(tk.Tk):
 
     def __setup__(self):
         #Fill with description of Power Sensor
-        self.info_label.config(text=self.my_pm.description)
-        #self.info_label.config(text="Ladybug simulation")
+        #self.info_label.config(text=self.my_pm.description)
+        self.info_label.config(text="Ladybug simulation")
         #Prepare start/stop button
         if not self.isreading:
             self.read_button.config(text="Start")
@@ -95,7 +94,7 @@ class App(tk.Tk):
         for freq in FREQS:
             self.list_freq.insert(tk.END, freq)
         #Prepare to fetch values from Power Sensor
-        self.my_pm.prepare_to_fetch(self.pm_frequency)
+        #self.my_pm.prepare_to_fetch(self.pm_frequency)
         #Initialize an store for PM Reading
         for _ in range(MAX_READINGS):
             self.pm_reads.append(0)
@@ -103,17 +102,18 @@ class App(tk.Tk):
 
     def callback_list_freq(self, event):
         """Callback function when a frequency is select"""
-        self.pm_frequency = FREQS[self.list_freq.curselection()[0]] *10E06
+        #self.pm_frequency = FREQS[self.list_freq.curselection()[0]] *10E06
+        #print(self.pm_frequency)
         #if reading, stop read and setting with new freq
         if self.isreading:
             self.start_stop_read()
-        self.my_pm.prepare_to_fetch(self.pm_frequency)
+        #self.my_pm.prepare_to_fetch(self.pm_frequency)
 
     def start_stop_read(self):
         """Read Button action"""
         if not self.isreading:
             self.read_button.config(text="Stop")
-            #self.ax.set_visible(True)
+            self.ax.set_visible(True)
             self.task_id = self.after(READ_INTERVAL_MS, self.read)
         else:
             self.read_button.config(text="Start")
@@ -123,27 +123,31 @@ class App(tk.Tk):
     def read(self):
         """Read the Power Meter sensor in dBm using Fetch method, use 2 digits for precision"""
         self.isreading = True
-        pm_read = self.my_pm.fetch()
-        #pm_read = randrange(-60, 10)
+        #pm_read = self.my_pm.fetch()
+        pm_read = randrange(-60, 10)
         self.canvas.itemconfig(self.read_text,text=f'{pm_read:.2f} dBm')
         #save PM read on storage
         self.pm_reads.appendleft(pm_read)
-        #converte deque to a list that can be plot
-        y_data = list(self.pm_reads)
-        self.plot(y_data)
-        
-        self.task_id = self.after(READ_INTERVAL_MS, self.read)
-
-    def plot(self, y_list):
-        """Plot the store reading"""
-        #clear any previous plot and plot with new data
+        #plot
         self.ax.cla()
         self.ax.grid(visible=True, which='both',linestyle='dotted')
         self.ax.set_ylim(-80,20)
         self.ax.tick_params(axis='both',labelsize=6)
         self.ax.set_xlim(60, 0)
         self.ax.yaxis.tick_right()
-        self.ax.plot(self.x_data, y_list, color='orange', linewidth=1.5)
+        y_data = list(self.pm_reads)
+        self.ax.plot(self.x_data, y_data, color='orange', linewidth=1.5)
         self.fig.canvas.draw()
+        #self.canvas_fig.draw()
+        self.task_id = self.after(READ_INTERVAL_MS, self.read)
+
+    def plot(self):
+        """Plot the store reading"""
+
+    
  
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
         
