@@ -8,6 +8,11 @@ from collections import deque
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
+####For test only
+import os
+import sys
+########
+
 BLACK = "#000000"
 RED = "#e7305b"
 GREEN = "#55ff33"
@@ -145,7 +150,14 @@ class App(tk.Tk):
         """Plot the store reading"""
 
     
- 
+#Start here 
+
+if not sys.warnoptions:
+    import warnings
+    warnings.simplefilter("ignore")
+
+if os.getenv('DISPLAY') is None:
+    os.environ['DISPLAY'] = ":0.0"
 
 if __name__ == "__main__":
     app = App()
