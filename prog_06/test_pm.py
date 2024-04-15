@@ -97,6 +97,5 @@ if __name__ == '__main__':
         show_menu()
         selec = int(input("Please choose one option: "))
         isFinished = exec_test(selec)
-    
-    sys.exit()
 
+    sys.exit()

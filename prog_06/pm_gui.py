@@ -22,22 +22,17 @@ READ_INTERVAL_MS = 300
 MAX_SEC_READINGS = 60
 MAX_READINGS = int(MAX_SEC_READINGS / (READ_INTERVAL_MS/1000))
 
-font = {'family': 'Ariel',
-        'color':  'darkred',
-        'weight': 'normal',
-        'size': 8,
-        }
-
 class App(tk.Tk):
     """Class for PM GUI"""
     def __init__(self):
         super().__init__()
-        #main window 
+        #main window
         self.title("Very Very Simple Power Meter")
         self.geometry('470x240')
         self.config(background="white", padx=1, pady=1)
         #Title
-        self.title_label = ttk.Label(text="Power Meter", foreground=BLACK, background="white", font=("Courrier", 16))
+        self.title_label = ttk.Label(text="Power Meter", foreground=BLACK,
+                                     background="white", font=("Courrier", 16))
         self.title_label.grid(column=1, row=0)
         #Canvas
         self.canvas = tk.Canvas(width=150, height=40, background=BLACK, highlightthickness=0)
@@ -54,10 +49,12 @@ class App(tk.Tk):
         self.list_freq.config(yscrollcommand= self.list_scrollbar.set)
         self.list_scrollbar.config(command = self.list_freq.yview)
         #MHZ Label
-        self.label_mhz = ttk.Label(text="MHz", background="white", foreground="black", font=("Arial",8, "bold"))
+        self.label_mhz = ttk.Label(text="MHz", background="white", foreground="black",
+                                   font=("Arial",8, "bold"))
         self.label_mhz.grid(column=0, row=0)
         #Info Label
-        self.info_label = ttk.Label(text="", wraplength=70, background="white",foreground="black", font=("Arial",8))
+        self.info_label = ttk.Label(text="", wraplength=70, background="white",foreground="black",
+                                    font=("Arial",8))
         self.info_label.grid(column=0,row=2, sticky='N', pady=10)
         #Read Button
         self.read_button = ttk.Button(text="", command=self.start_stop_read)
@@ -83,7 +80,8 @@ class App(tk.Tk):
         #Create a canvas to contains the figure
         self.canvas_fig = FigureCanvasTkAgg(self.fig)
         self.canvas_fig.get_tk_widget().configure(width=200,height=70)
-        self.canvas_fig.get_tk_widget().grid(column=1, row=2, pady= 0, ipadx=40, ipady=40, sticky='N')
+        self.canvas_fig.get_tk_widget().grid(column=1, row=2, pady= 0, ipadx=40,
+                                             ipady=40, sticky='N')
         #Initial condition
         self.isreading = False
         self.__setup__()
@@ -113,7 +111,6 @@ class App(tk.Tk):
         #Initialize an store for PM Reading
         for _ in range(MAX_READINGS):
             self.pm_reads.append(0)
-        
 
     def callback_list_freq(self, event):
         """Callback function when a frequency is select"""
@@ -145,7 +142,6 @@ class App(tk.Tk):
         #converte deque to a list that can be plot
         y_data = list(self.pm_reads)
         self.plot(y_data)
-        
         self.task_id = self.after(READ_INTERVAL_MS, self.read)
 
     def plot(self, y_list):
@@ -159,5 +155,4 @@ class App(tk.Tk):
         self.ax.yaxis.tick_right()
         self.ax.plot(self.x_data, y_list, color='orange', linewidth=1.5)
         self.fig.canvas.draw()
- 
         
