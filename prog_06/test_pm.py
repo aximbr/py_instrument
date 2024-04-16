@@ -91,6 +91,10 @@ def exec_test(option):
 
 #main()
 if __name__ == '__main__':
+    if not sys.warnoptions:
+        import warnings
+        warnings.simplefilter("ignore")
+
     isFinished = False
 
     while not isFinished:

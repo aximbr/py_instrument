@@ -1,6 +1,7 @@
 """Ladybug Power Sensor Class"""
 import time
 import pyvisa as visa
+import sys
 
 #Select one of VISA lib implementation, make sure it is installed
 #VISA_LIB_PATH = '/usr/lib/librsvisa.so'
@@ -17,7 +18,11 @@ class LB5908A():
         rm = visa.ResourceManager(VISA_LIB_PATH)
         #print(rm)
         address = rm.list_resources('USB?*::INSTR')
-        self.pm = rm.open_resource(address[0])
+        try:
+            self.pm = rm.open_resource(address[0])
+        except IndexError:
+            print("No Power Sensor detected")
+            sys.exit()   
         self.description = self.pm.query('*IDN?')
         self.power_mode = ""
         self.reset()
