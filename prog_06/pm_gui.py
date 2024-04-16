@@ -114,6 +114,9 @@ class App(tk.Tk):
 
     def callback_list_freq(self, event):
         """Callback function when a frequency is select"""
+        #There is no use for 'event' received, but just to clear the message from pylint
+        if event:
+            event = None
         self.pm_frequency = FREQS[self.list_freq.curselection()[0]] *10E06
         #if reading, stop read and setting with new freq
         if self.isreading:

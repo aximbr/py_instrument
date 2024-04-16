@@ -37,6 +37,10 @@ class LB5908A():
         self.power_mode = self.get_unit_power()
         time.sleep(0.1)
 
+    def clear(self):
+        """Device Clear Command"""
+        self.pm.write('DCL')
+        
     def set_default_state(self):
         """Set to default settings"""
         self.pm.write('SYST:PRES DEF')
@@ -59,11 +63,12 @@ class LB5908A():
 
     def prepare_to_read(self, freq):
         """Send commands to prepare to read"""
+        self.clear()
         self.set_default_state()
         self.clear_auto_average()
         self.turn_off_step_detection()
         self.turn_off_continuos_triggering()
-        self.set_average_count(5)
+        self.set_average_count(10)
         self.set_freq(freq)
 
     def read_power(self):
@@ -72,11 +77,12 @@ class LB5908A():
     
     def prepare_to_fetch(self, freq):
         """Send commands to prepare to fetch"""
+        self.clear()
         self.set_default_state()
         self.clear_auto_average()
         self.turn_off_step_detection()
         self.turn_on_continuos_triggering()
-        self.set_average_count(5)
+        self.set_average_count(10)
         self.set_freq(freq)
 
     def fetch(self):
@@ -86,6 +92,7 @@ class LB5908A():
     def prepare_to_measure(self, freq):
         """Send commands to prepare to measure"""
         self.pm.timeout = 50000
+        self.clear()
         self.set_default_state()
         self.set_freq(freq)
 
